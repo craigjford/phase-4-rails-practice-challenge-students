@@ -3,10 +3,10 @@ class StudentsController < ApplicationController
     rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 
     wrap_parameters format: []
-    
-    def index        
-        students = Student.all  
-        render json: students
+
+    def index 
+        students = Student.all
+        render json: students, include: :instructor                  
     end
 
     def show    
@@ -14,15 +14,30 @@ class StudentsController < ApplicationController
         render json: student
     end
 
-    def update   
-        student = find_student
-        student.update!(student_params)
-        render json: student, status: :ok
+
+    def update 
+        if params[:instructor_id].present? 
+            instructor = Instructor.find_by(id: params[:instructor_id]) 
+            if instructor
+                student = find_student
+                stud = student.update!(student_params)
+                render json: student, include: :instructor, status: :accepted
+            else
+                render json: { error: "Instructor not found" }, status: :not_found
+            end        
+        end                   
     end
 
-    def create   
-        student = Student.create!(student_params)
-        render json: student, status: :created
+    def create 
+        if params[:instructor_id].present? 
+            instructor = Instructor.find_by(id: params[:instructor_id]) 
+            if instructor
+                student = instructor.students.create!(student_params)
+                render json: student, status: :created
+            else
+                render json: { error: "Instructor not found" }, status: :not_found
+            end        
+        end                   
     end
 
     def destroy 
@@ -39,13 +54,14 @@ class StudentsController < ApplicationController
 
     def student_params
         params.permit(:name, :major, :age)
-      end
+    end
 
     def render_not_found_response
-      render json: { error: "Review not found" }, status: :not_found
+      render json: { error: "Student not found" }, status: :not_found
     end
   
     def render_unprocessable_entity_response(invalid)  
         render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
     end
+
 end

@@ -6,7 +6,7 @@ class InstructorsController < ApplicationController
 
     def index        
         instructors = Instructor.all  
-        render json: instructors
+        render json: instructors, include: :students
     end
 
     def show    
@@ -42,7 +42,7 @@ class InstructorsController < ApplicationController
       end
 
     def render_not_found_response
-      render json: { error: "Review not found" }, status: :not_found
+      render json: { error: "Instructor not found" }, status: :not_found
     end
   
     def render_unprocessable_entity_response(invalid)  
