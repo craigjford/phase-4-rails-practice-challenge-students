@@ -38,7 +38,7 @@ class InstructorsController < ApplicationController
     end
 
     def instructor_params
-        params.permit(:name)
+        params.require(:instructor).permit(:name)
       end
 
     def render_not_found_response

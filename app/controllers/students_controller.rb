@@ -14,30 +14,25 @@ class StudentsController < ApplicationController
         render json: student
     end
 
-
-    def update 
-        if params[:instructor_id].present? 
-            instructor = Instructor.find_by(id: params[:instructor_id]) 
-            if instructor
-                student = find_student
-                stud = student.update!(student_params)
-                render json: student, include: :instructor, status: :accepted
-            else
-                render json: { error: "Instructor not found" }, status: :not_found
-            end        
+    def create 
+        instructor = Instructor.find_by(id: params[:instructor_id]) 
+        if instructor
+            student = instructor.students.create!(student_params)
+            render json: student, status: :created
+        else
+            render json: { error: "Instructor not found" }, status: :not_found
         end                   
     end
 
-    def create 
-        if params[:instructor_id].present? 
-            instructor = Instructor.find_by(id: params[:instructor_id]) 
-            if instructor
-                student = instructor.students.create!(student_params)
-                render json: student, status: :created
-            else
-                render json: { error: "Instructor not found" }, status: :not_found
-            end        
-        end                   
+    def update 
+        instructor = Instructor.find_by(id: params[:instructor_id]) 
+        if instructor
+            student = find_student
+            student.update!(student_params)
+            render json: student, include: :instructor, status: :accepted
+        else
+            render json: { error: "Instructor not found" }, status: :not_found
+        end                         
     end
 
     def destroy 
