@@ -6,18 +6,18 @@ class InstructorsController < ApplicationController
 
     def index        
         instructors = Instructor.all  
-        render json: instructors, include: :students
+        render json: instructors, include: :students, status: :ok
     end
 
     def show    
         instructor = find_instructor
-        render json: instructor
+        render json: instructor, status: :ok
     end
 
     def update   
         instructor = find_instructor
         instructor.update!(instructor_params)
-        render json: instructor, status: :ok
+        render json: instructor, status: :accepted
     end
 
     def create   
@@ -28,7 +28,7 @@ class InstructorsController < ApplicationController
     def destroy 
         instructor = find_instructor  
         instructor.destroy
-        head :no_content
+        head :no_content, status: 204
     end
 
     private

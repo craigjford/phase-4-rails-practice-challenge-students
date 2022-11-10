@@ -6,12 +6,12 @@ class StudentsController < ApplicationController
 
     def index 
         students = Student.all
-        render json: students, include: :instructor                  
+        render json: students, include: :instructor, status: :ok                  
     end
 
     def show    
         student = find_student
-        render json: student
+        render json: student, status: :ok
     end
 
     def create 
@@ -38,7 +38,7 @@ class StudentsController < ApplicationController
     def destroy 
         student = find_student  
         student.destroy
-        head :no_content
+        head :no_content, status: 204
     end
 
     private
